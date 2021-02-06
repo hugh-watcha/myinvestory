@@ -1,4 +1,4 @@
-package com.jaewoo.myinvestory.shared.db
+package com.jaewoo.myinvestory.shared.model.db
 
 import com.squareup.sqldelight.db.SqlDriver
 

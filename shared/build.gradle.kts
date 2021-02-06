@@ -6,13 +6,11 @@ plugins {
     id("com.squareup.sqldelight")
 }
 
-sqldelight {
-    database("InvestmentItem") {
-        packageName = "com.jaewoo.myinvestory.db"
-    }
-    database("InvestmentHistory") {
-        packageName = "com.jaewoo.myinvestory.db"
-    }
+object SqlDelight {
+    private const val sql_delight_version = "1.4.4"
+    const val runtime = "com.squareup.sqldelight:runtime:$sql_delight_version"
+    const val android = "com.squareup.sqldelight:android-driver:$sql_delight_version"
+    const val ios = "com.squareup.sqldelight:native-driver:$sql_delight_version"
 }
 
 kotlin {
@@ -25,10 +23,9 @@ kotlin {
         }
     }
     sourceSets {
-        val sql_delight_version = "1.4.3"
         val commonMain by getting {
             dependencies {
-                implementation("com.squareup.sqldelight:runtime:$sql_delight_version")
+                implementation(SqlDelight.runtime)
             }
         }
         val commonTest by getting {
@@ -39,8 +36,8 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("com.google.android.material:material:1.2.1")
-                implementation("com.squareup.sqldelight:android-driver:$sql_delight_version")
+                implementation("com.google.android.material:material:1.3.0")
+                implementation(SqlDelight.android)
             }
         }
         val androidTest by getting {
@@ -51,7 +48,7 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                implementation("com.squareup.sqldelight:native-driver:$sql_delight_version")
+                implementation(SqlDelight.ios)
             }
         }
         val iosTest by getting
@@ -67,6 +64,13 @@ android {
     }
 }
 
+sqldelight {
+    database("InvestmentDatabase") {
+        packageName = "com.jaewoo.myinvestory.db"
+        sourceFolders = listOf("sqldelight")
+    }
+}
+
 val packForXcode by tasks.creating(Sync::class) {
     group = "build"
     val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
@@ -79,5 +83,4 @@ val packForXcode by tasks.creating(Sync::class) {
     from({ framework.outputDirectory })
     into(targetDir)
 }
-
 tasks.getByName("build").dependsOn(packForXcode)

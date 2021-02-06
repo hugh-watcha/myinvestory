@@ -1,0 +1,142 @@
+PRAGMA foreign_keys = 1;
+
+CREATE TABLE InvestmentItem (
+    itemId INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    marketId INTEGER NOT NULL,
+    standardCurrencyId INTEGER NOT NULL,
+    FOREIGN KEY (standardCurrencyId) REFERENCES Currency (id),
+    FOREIGN KEY (marketId) REFERENCES Market (id)
+);
+
+CREATE TABLE InvestmentRecord (
+    recordId INTEGER PRIMARY KEY AUTOINCREMENT,
+    actionId INTEGER NOT NULL,
+    marketId INTEGER NOT NULL,
+    itemId INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    quantity TEXT NOT NULL,
+    unitPrice TEXT NOT NULL,
+    currencyId INTEGER NOT NULL,
+    currencyExchangeRate TEXT NOT NULL,
+    commissionRate TEXT NOT NULL,
+    FOREIGN KEY (itemId) REFERENCES InvestmentItem (itemId),
+    FOREIGN KEY (currencyId) REFERENCES Currency (id),
+    FOREIGN KEY (marketId) REFERENCES Market (id),
+    FOREIGN KEY (actionId) REFERENCES Action (id)
+);
+
+CREATE TABLE Portfolio (
+    portfolioId INTEGER PRIMARY KEY AUTOINCREMENT,
+    itemId INTEGER NOT NULL,
+    quantity TEXT NOT NULL,
+    FOREIGN KEY (itemId) REFERENCES InvestmentItem (itemId)
+);
+
+CREATE TABLE RecentPrice (
+    itemId INTEGER NOT NULL,
+    price TEXT NOT NULL,
+    currencyId INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    PRIMARY KEY (itemId),
+    FOREIGN KEY (itemId) REFERENCES InvestmentItem (itemId),
+    FOREIGN KEY (currencyId) REFERENCES Currency (id)
+);
+
+CREATE TABLE CurrencyExchangeRate (
+    currencyId INTEGER PRIMARY KEY,
+    rate TEXT NOT NULL,
+    date TEXT NOT NULL,
+    FOREIGN KEY (currencyId) REFERENCES Currency (id)
+);
+
+CREATE TABLE Currency (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE Market (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL
+);
+
+CREATE TABLE Action (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL
+);
+
+getAllItems:
+SELECT *
+FROM InvestmentItem;
+
+insertItem:
+INSERT INTO InvestmentItem(name, marketId, standardCurrencyId)
+VALUES (?, ?, ?);
+
+getItem:
+SELECT *
+FROM InvestmentItem
+WHERE itemId = ?;
+
+getRecords:
+SELECT *
+FROM InvestmentRecord
+LIMIT ? OFFSET ?;
+
+insertRecord:
+INSERT INTO InvestmentRecord(actionId, marketId, itemId, date, quantity, unitPrice, currencyId, currencyExchangeRate, commissionRate)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getPortfolios:
+SELECT *
+FROM Portfolio
+LIMIT ? OFFSET ?;
+
+insertPortfolio:
+INSERT INTO Portfolio(itemId, quantity)
+VALUES (?, ?);
+
+getRecentPrice:
+SELECT *
+FROM RecentPrice
+WHERE itemId = ?;
+
+insertRecentPrice:
+INSERT INTO RecentPrice(itemId, price, currencyId, date)
+VALUES (?, ?, ?, ?);
+
+getCurrencyExchangeRate:
+SELECT *
+FROM CurrencyExchangeRate
+WHERE currencyId = ?;
+
+insertCurrencyExchangeRate:
+INSERT INTO CurrencyExchangeRate(currencyId, rate, date)
+VALUES (?, ?, ?);
+
+getCurrency:
+SELECT *
+FROM Currency
+WHERE id = ?;
+
+insertCurrency:
+INSERT INTO Currency(code)
+VALUES (?);
+
+getMarket:
+SELECT *
+FROM Market
+WHERE id = ?;
+
+insertMarket:
+INSERT INTO Market(code)
+VALUES (?);
+
+getAction:
+SELECT *
+FROM Action
+WHERE id = ?;
+
+insertAction:
+INSERT INTO Action(code)
+VALUES (?);
